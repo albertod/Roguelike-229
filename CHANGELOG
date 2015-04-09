@@ -1,0 +1,156 @@
+///ASSIGMENT 1///
+#01/25/2015 (1.01 Dungeon Generation)
+-Started the dungeon 
+-Created the dungeon representation in a 2-D array [160][96]
+-represented the rooms with a struct
+-Created the function to initialize the dimensions of a room
+
+
+#01/26/2015
+-implemented create_rooms(), all rooms are place correctly on the map with all rules met
+-Corridors implement in vertical and horizontal direction, Used the centro point of two 
+consecutive place rooms to create them.
+*corridors are experience a incomplete block at the end of output
+*Having problems to compile code when tried to create header file
+
+#01/27/2015
+-Fixed compilation problem, I was missing a ";" on the header file
+-Fixed corridors
+///ASIGMENT 1 DONE ///
+
+//ASSIGMENT 2 ///
+#01/30/2015
+-Started assignment
+-Used as template code of FILE I/O that we wrote in class.
+-Declare Dungeon array that would represent the dungeon in the binary file
+-Started to write to dungeon binary file. Successfully wrote the header "RLG229"
+
+#02/01/2015
+-Successfully recorded the map cells in the binary file
+-Working in getting the file size and the room coordinates (To be completed)
+-It seems all the fields are saved correctly on the file
+
+#02/02/2015
+-got working load and save
+-work pretty nice
+-Clean code, gonna review with professor details and submit
+//ASSIGMENT 2 DONE ///
+
+//ASIGMENT 3 //
+
+02/6/2015
+- started planning heap min data struct
+- Researche wikipedia article to develo dijktra algorithm for finding shortest path
+
+02/10/2015
+- Started implementation of heap min, still trying to figure out how sort elements by key
+- Created a typedef struct "node_path" that wil hold cost, position, index on heap and previous
+node, this will provide data to dijktra algorithm .
+
+02/12/2015
+- Almost finished heap_min, still figuring out how implement correctly the decrease_key function
+- logic for dijktra almost complete
+
+02/13/2015
+- Finally got done with the min heap
+- Having a lot of seg faults when trying to test algorithm, will start testing by parts
+
+02/16/2015
+- Seg fault are gone, but the map only show one 'P' ('P' is my debug terrain to show the shortest path)
+- Logi seem to be fine, sadly it must be a small bug what I have
+
+02/17/2015
+-Finally got it working 99% of the time, very few time it outputs a random 'P' not following the path
+- I have spent +50 hours in this assignment, so I hope this small bug doesn't affect severe my grade. 
+
+//ASSIGMNET 3 DONE
+
+
+//ASSIGMENT 4 START///
+
+02/19/2015
+- started planning assigment
+- Implemented Character_t struct that represent a character on the map
+
+02/20/2015
+- Created a modified dijktra algorithm called dijktra_game, to keep turn of character
+- Having some problems moving the characters 
+
+02/21/2015
+- Telepathic & Smart Monster moving correctly, also PC moving left-and right only 
+- Starting implementing non-smart and only telepathic monstes
+
+02/23/2015
+- All monsters type implemented correctly, 
+- Starting implementing ending of game
+
+02/24/2015
+- All implemented correctly, Assignment done.
+
+//Assignment 4 done 
+
+//Assignment 5 
+03/01/2015
+- starting planning strategy for assignment 
+- include initialization ncurses function from lectures
+
+02/01/2015 
+- finished character movement 
+- finished displaying only 80*24 display 
+
+03/01/2015
+- finished Look-mode
+- not had time to do stairs part
+//Assignment 5 done
+
+//Assignment 6///
+
+03/19/2015
+-started assignment
+--thinking approach to write info to file
+- noticed that all the info from the PC can be saved
+using the dungeon structure
+-almost finished the writing portion of the assigment
+
+03/20/2015
+- had to configure the dugeon writing function, due to the 
+stairs
+- finished PC data saving, starting NPC storage.
+- all the info about the NPC can be getted from the dungeon
+structure
+- finished NPC portion, starting modifiying reading portion
+- reading portion done, starting auto-loading and deletion of 
+game file when finished.
+- game done. 
+
+//Assigment 6 done
+
+//Assigment 7///
+
+03/30/2015
+- created a parser.cpp and parser.h files for the assigment
+- started creating a strign isntance to parse the text file 
+using the getline() method
+- use getenv() function to get to the monster file on the /.rlg229 folder
+- Having some problems parsing number from strings
+
+- finalyly got to parse the diece variables from speed,ham, hp, assigment done
+
+03/31/2015
+
+- added variables ints to store the color and abil of the monsters
+
+//Assigment 7 done (In one day :) )
+
+//Start Assignment 8////
+
+04/07/2014 
+
+-start assignmet base on last week assignmet
+- replaced/added variable names to accomodate the parser for new text file
+- create bit field for the new TYPES
+- tested the assignmen (IT WORKS :) 
+
+/////Done assignment 8 /////////////
+
+
