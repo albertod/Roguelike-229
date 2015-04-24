@@ -11,6 +11,9 @@ using namespace std;
 #include <string>
 #include <cstdlib>
 
+
+
+
 /* Colors */
 #define COLOR_BLACK 0
 #define COLOR_RED 1
@@ -39,8 +42,12 @@ using namespace std;
 
 #define COMPLETE           (NAME | SYMB | COLOR | ABIL | HP | DAM | SPEED | DESC)
 
+using namespace std;
 
 
+
+
+namespace monsters {
 
 ///Store Base, dice and sides as values
 string name;
@@ -69,10 +76,21 @@ int side_dam;
 
 int color_npc;
 int abil_npc;
+char symbol_result;
 
-extern "C" int parser();
 
-int parser()
+
+int32_t speed_result, hp_result, dam_result;
+
+
+#include "dungeon.h"
+#include "character.h"
+#include "npc.h"
+
+
+extern "C" {
+
+int parser_monsters(dungeon_t *d)
 {
   // create a file-reading object
   ifstream fin;
@@ -104,6 +122,11 @@ int parser()
     //is found, then the monster is dropped
     while (!fin.eof() && (line.compare("END") != 0) && checksum != COMPLETE) {
       
+
+      //Create an instance of a Dice 
+      dice *dice_object = new dice();
+      dice *dam_dice = new dice();//to be used only by damage 
+
       string parse_line = line.substr(0,line.find(delimeter));
 
       if (parse_line.compare("NAME") == 0) {
@@ -112,6 +135,7 @@ int parser()
       }
       else if (parse_line.compare("SYMB") == 0) {
         symb = line.substr(line.find(delimeter) + 1, line.find("\n")); 
+        symbol_result = symb[0];
         checksum |= SYMB;
       }
       else if (parse_line.compare("COLOR") == 0) {
@@ -144,13 +168,17 @@ int parser()
       }
       else if (parse_line.compare("SPEED") == 0 ) {
         speed = line.substr(line.find(delimeter) + 1, line.find("\n"));
-        
         string sb  = speed.substr(0,speed.find('+'));
         base_speed = atoi(sb.c_str());
+        
         string sd  = speed.substr(speed.find('+') + 1,speed.find('d') - 2);
         dice_speed = atoi(sd.c_str());
+      
         string ss = speed.substr(speed.find('d')+1,speed.length()-1);
         side_speed = atoi(ss.c_str());
+        
+        dice_object.set(base_speed,dice_speed,side_speed);
+        speed_result = dice_object.roll();
         checksum |= SPEED;
       }
       else if (parse_line.compare("DAM") == 0) {
@@ -161,18 +189,24 @@ int parser()
         dice_dam = atoi(sd.c_str());
         string ss = speed.substr(speed.find('d')+1,speed.length()-1);
         side_dam = atoi(ss.c_str());
-       
+        dam_dice.set(base_dam,dice_dam,side_dam);
+
         checksum |= DAM;
       }
       else if (parse_line.compare("HP") == 0) {
-        hp = line.substr(line.find(delimeter) + 1, line.find("\n"));
-        speed = line.substr(line.find(delimeter) + 1, line.find("\n"));
+        hp = line.substr(line.find(delimeter) + 1, line.find("\n"));        speed = line.substr(line.find(delimeter) + 1, line.find("\n"));
         string sb  = speed.substr(0,speed.find('+'));
         base_hp   = atoi(sb.c_str());
         string sd  = speed.substr(speed.find('+') + 1,speed.find('d') - 2);
         dice_hp = atoi(sd.c_str());
         string ss = speed.substr(speed.find('d')+1,speed.length()-1);
         side_hp = atoi(ss.c_str());
+        
+
+        dice_object.set(base_hp,dice_hp,side_hp);
+        hp_result = dice_object.roll();
+        
+
         checksum |= HP;
       }
       else if (parse_line.compare("ABIL") == 0) {
@@ -196,10 +230,54 @@ int parser()
 
     if(checksum == COMPLETE)
     {
-      cout<<name+"\n"<<desc<<symb+"\n" 
-        <<color+"\n"<<base_speed <<'+'<<dice_speed<<'d'<<side_speed<<"\n"
-        <<abil+"\n"<<base_hp<<'+'<<dice_hp<<'d'<<side_hp<<"\n"
-        <<base_dam<<'+'<<dice_dam<<'d'<<side_dam<<"\n"<<endl;
+
+      // cout<<name+"\n"<<desc<<symb+"\n" 
+      //   <<color+"\n"<<base_speed <<'+'<<dice_speed<<'d'<<side_speed<<"\n"
+      //   <<abil+"\n"<<base_hp<<'+'<<dice_hp<<'d'<<side_hp<<"\n"
+      //   <<base_dam<<'+'<<dice_dam<<'d'<<side_dam<<"\n"<<endl;
+    
+
+        //call c funtion to add parapameters;
+        character_t *m;
+        uint32_t room;
+        pair_t p;
+
+      m = (character_t* )malloc(sizeof (*m));
+      m->symbol = symbol_result;
+      room = rand_range(1, d->num_rooms - 1);
+      do {
+        p[dim_y] = rand_range(d->rooms[room].position[dim_y],
+          (d->rooms[room].position[dim_y] +
+           d->rooms[room].size[dim_y] - 1));
+        p[dim_x] = rand_range(d->rooms[room].position[dim_x],
+          (d->rooms[room].position[dim_x] +
+           d->rooms[room].size[dim_x] - 1));
+      } while (d->character[p[dim_y]][p[dim_x]]);
+      m->position[dim_y] = p[dim_y];
+      m->position[dim_x] = p[dim_x];
+      d->character[p[dim_y]][p[dim_x]] = m;
+      m->speed = speed_result;
+      m->next_turn = 0;
+      m->alive = 1;
+      m->sequence_number = ++d->character_sequence_number;
+      m->pc = NULL;
+      m->npc = ( npc_t* )malloc(sizeof (*m->npc));
+      m->npc->characteristics = abil_npc;
+      m->npc->have_seen_pc = 0;
+      //new characteristics 
+      m->npc->color = color_npc;
+      m->npc->name  = name.c_str();
+      m->npc->description = desc.c_str();
+      m->npc->hp = hp_result;
+
+
+      d->character[p[dim_y]][p[dim_x]] = m;
+      heap_insert(&d->next_turn, m);
+
+
+      //Results 
+      // dam_dice;
+
     }
     
     /*the Npc have to be initialized before these lines*/ 
@@ -208,6 +286,9 @@ int parser()
   }
 
   return 0; // no problems given :) 
+ }
+
 }
 
+}
 

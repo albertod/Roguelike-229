@@ -17,11 +17,12 @@ char *print_character(const void *v)
   return string;
 }
 
-void character_delete(void *v){
+void character_delete(void *v)
+{
   /* The PC is never malloc()ed anymore, do don't attempt to free it here. */
   character_t *c;
 
-  if (   v) {
+  if (v) {
     c = v;
 
     if (c->npc) {

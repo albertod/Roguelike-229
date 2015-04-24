@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef HEAP_H
 # define HEAP_H
 
@@ -36,8 +32,4 @@ int heap_decrease_key_no_replace(heap_t *h, heap_node_t *n);
 }
 # endif
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif

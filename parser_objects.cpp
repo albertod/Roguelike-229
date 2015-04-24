@@ -1,9 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <cstring>
-#include <cstdlib>
+#include "parser_objects.h"
 
 using std::cout;
 using std::endl;
@@ -59,6 +54,9 @@ using namespace std;
 
 #define COMPLETE           (NAME  | DESC  |TYPE  | COLOR | HIT |DAM | DODGE |DEF | WEIGHT | SPEED | ATTR  |VAL )   
 
+
+namespace objects{
+
 ///Store Base, dice and sides as values
 string name;
 string desc;
@@ -111,7 +109,7 @@ int side_def;
 
 
 int color_npc;
-int abil_npc; // type
+//int abil_npc; // type
 int type_obj; // type
 extern "C" int parser_objects();
 
@@ -330,4 +328,6 @@ int parser_objects()
   }
 
   return 0; // no problems given :) 
+}
+
 }

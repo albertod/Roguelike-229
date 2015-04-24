@@ -1,9 +1,13 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef UTILS_H
 # define UTILS_H
+
+# ifdef __cplusplus
+#  include <cstdlib>
+
+extern "C" {
+# else
+#  include <stdlib.h>
+# endif
 
 # define rand_under(numerator, denominator) \
   (rand() < ((RAND_MAX / denominator) * numerator))
@@ -11,8 +15,8 @@ extern "C" {
 
 int makedirectory(char *dir);
 
-#endif
-
-#ifdef __cplusplus
+# ifdef __cplusplus
 }
+# endif
+
 #endif

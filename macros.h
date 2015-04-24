@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef MACROS_H
 # define MACROS_H
 
@@ -186,8 +182,4 @@ extern "C" {
 
 # endif /* NIAGARA */
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif

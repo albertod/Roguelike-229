@@ -1,9 +1,9 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-  
 #ifndef DUNGEON_H
 # define DUNGEON_H
+
+# ifdef __cplusplus
+extern "C" {
+# endif
 
 # include <stdint.h>
 # include <stdio.h>
@@ -11,6 +11,7 @@ extern "C" {
 # include "heap.h"
 # include "dims.h"
 # include "character.h"
+# include "object.h"
 
 #define DUNGEON_X              160
 #define DUNGEON_Y              96
@@ -22,6 +23,8 @@ extern "C" {
 #define MAX_PLACEMENT_ATTEMPTS 1000
 #define SAVE_DIR               ".rlg229"
 #define DUNGEON_SAVE_FILE      "dungeon"
+#define MONSTER_DESC_FILE      "monster_desc.txt"
+#define OBJECT_DESC_FILE      "object_desc.txt"
 #define DUNGEON_SAVE_SEMANTIC  "RLG229"
 #define DUNGEON_SAVE_VERSION   1U
 #define VISUAL_RANGE           30
@@ -41,7 +44,7 @@ typedef enum __attribute__ ((__packed__)) terrain_type {
   ter_floor,
   ter_floor_room,
   ter_floor_hall,
-  ter_floor_tentative,
+  ter_floor_tunnel,
   ter_stairs,
   ter_stairs_up,
   ter_stairs_down
@@ -57,8 +60,11 @@ typedef struct room {
 typedef struct npc npc_t;
 typedef struct pc pc_t;
 typedef struct character character_t;
+typedef void *monster_description_t;
+typedef void *object_description_t;
 
 typedef struct dungeon {
+  uint32_t render_whole_dungeon;
   uint32_t num_rooms;
   room_t rooms[MAX_ROOMS];
   terrain_type_t map[DUNGEON_Y][DUNGEON_X];
@@ -71,10 +77,15 @@ typedef struct dungeon {
    * and pulling in unnecessary data with each map cell would add a lot   *
    * of overhead to the memory system.                                    */
   uint8_t hardness[DUNGEON_Y][DUNGEON_X];
+  uint8_t seen[DUNGEON_Y][DUNGEON_X];
   uint16_t num_monsters;
+  uint16_t num_objects;
   uint32_t character_sequence_number;
   character_t *character[DUNGEON_Y][DUNGEON_X];
+  object_t *object[DUNGEON_Y][DUNGEON_X];
   uint8_t pc_distance[DUNGEON_Y][DUNGEON_X];
+  /* Need 16 bits because these can go to 4 each */
+  uint16_t pc_tunnel[DUNGEON_Y][DUNGEON_X];
   /* pc can be statically allocated; however, that lead to special cases *
    * for the deallocator when cleaning up our turn queue.  Making it     *
    * dynamic simplifies the logic at the expense of one level of         *
@@ -86,19 +97,21 @@ typedef struct dungeon {
   pair_t io_offset;
   uint32_t save_and_exit;
   uint32_t quit_no_save;
+  monster_description_t monster_descriptions;
+  object_description_t object_descriptions;
 } dungeon_t;
 
-int read_dungeon(dungeon_t *dungeon, char *filename);
+int read_dungeon(dungeon_t *dungeon);
 int gen_dungeon(dungeon_t *dungeon);
 void render_dungeon(dungeon_t *dungeon);
 int write_dungeon(dungeon_t *dungeon);
 void init_dungeon(dungeon_t *d);
 void delete_dungeon(dungeon_t *d);
 void new_dungeon(dungeon_t *d);
-void save_npc_list(dungeon_t *d, FILE *f);
-void read_npc_list(dungeon_t *d, FILE *f,uint16_t nummon);
+void unlink_dungeon(void);
 
-#endif
-#ifdef __cplusplus
+# ifdef __cplusplus
 }
+# endif
+
 #endif

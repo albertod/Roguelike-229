@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef CHARACTER_H
 # define CHARACTER_H
 
@@ -12,11 +8,15 @@ extern "C" {
 typedef struct dungeon dungeon_t;
 typedef struct npc npc_t;
 typedef struct pc pc_t;
+typedef struct dice_t dice_t;
 
 typedef struct character {
   char symbol;
+  uint32_t color;
   pair_t position;
   uint32_t speed;
+  int32_t hp;
+  const dice_t *damage;
   uint32_t next_turn;
   uint32_t alive;
   /* The priority queue is not stable.  It's nice to have a record of *
@@ -36,8 +36,4 @@ int32_t compare_characters_by_next_turn(const void *character1,
 uint32_t can_see(dungeon_t *d, character_t *voyeur, character_t *exhibitionist);
 void character_delete(void *c);
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif

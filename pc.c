@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#include <unistd.h>
+#include <ncurses.h> /* for COLOR_WHITE */
+
 #include "string.h"
 
 #include "dungeon.h"
@@ -7,6 +8,7 @@
 #include "utils.h"
 #include "move.h"
 #include "io.h"
+#include "descriptions.h"
 
 void pc_delete(pc_t *pc)
 {
@@ -28,24 +30,23 @@ void place_pc(dungeon_t *d)
   d->pc.position[dim_x] = rand_range(d->rooms->position[dim_x],
                                      (d->rooms->position[dim_x] +
                                       d->rooms->size[dim_x] - 1));
-  d->pc.next_turn = 0;
 }
 
-void config_pc(dungeon_t *d, uint8_t flag)
+void config_pc(dungeon_t *d)
 {
   d->pc.symbol = '@';
+  d->pc.color = COLOR_WHITE;
 
-  /*Loading PC position from previous game*/
-  //else flag == 0, so we need to generate new PC position and game turn :)
-  if( flag == 0)
-  {
-    place_pc(d); 
-  }                        
+  place_pc(d);
 
   d->pc.speed = PC_SPEED;
+  d->pc.next_turn = 0;
   d->pc.alive = 1;
   d->pc.sequence_number = 0;
   d->pc.pc = malloc(sizeof (*d->pc.pc));
+  d->pc.hp = 100; //Hitpoints of pc
+  d->pc.damage = get_pc_damage();
+
   strncpy(d->pc.pc->name, "Isabella Garcia-Shapiro", sizeof (d->pc.pc->name));
   strncpy(d->pc.pc->catch_phrase,
           "Whatcha doin'?", sizeof (d->pc.pc->name));
@@ -54,6 +55,9 @@ void config_pc(dungeon_t *d, uint8_t flag)
   d->character[d->pc.position[dim_y]][d->pc.position[dim_x]] = &d->pc;
 
   io_calculate_offset(d);
+
+  dijkstra(d);
+  dijkstra_tunnel(d);
 }
 
 uint32_t pc_next_pos(dungeon_t *d, pair_t dir)
